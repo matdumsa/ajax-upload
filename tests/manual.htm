@@ -73,8 +73,9 @@
             <h2>Test 3 - Resize window and check 1 and 2 again</h2>            
             <h2>Test 4 - Check all options !!!</h2>
             <p>
+                When alerted upload is disabled.
                 <a id="test4" class="button" href="http://valums.com/">Select</a>
-                <a id="test4upload" href='#'>Upload</a>
+                <a id="test4upload" href='#'>Submit &amp; Enable</a>
             </p>
             <p>Check with image and some other file</p>
 <pre>                 
@@ -147,7 +148,7 @@ jQuery('#test4upload').click(function(){
                     });
                 });                    
             </script>    
-            <h2>Test 5 - Return false in onChange</h2>       
+            <h2>Test 5 - Return false in onChange and file values</h2>       
             <p>
                 <a id="test5" class="button" href="http://valums.com/">Select</a>
             </p>              
@@ -162,6 +163,7 @@ new AjaxUpload(document.getElementById('test5'),{
                 jQuery(function(){                    
                     new AjaxUpload(document.getElementById('test5'),{
                         onChange: function(file, ext){
+                            alert(file + '\n' + ext);
                             return false;
                         }
                     });

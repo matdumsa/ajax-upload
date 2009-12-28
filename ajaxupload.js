@@ -2,7 +2,7 @@
  * AJAX Upload ( http://valums.com/ajax-upload/ ) 
  * Copyright (c) Andris Valums
  * Licensed under the MIT license ( http://valums.com/mit-license/ )
- * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions
+ * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions 
  */
 (function(){
     // for jslint
@@ -357,12 +357,15 @@
             document.body.appendChild(div);                       
            
             addEvent(input, 'change', function(){
-                // Get filename from input, required
-                // as some browsers have path instead of it                
-                var file = fileFromPath(this.value);
-                
-                var res = self._settings.onChange.call(self, file, getExt(file));                                
-                if (res == false){
+                if ( ! input || input.value === ''){                
+                    return;                
+                }
+                            
+                // Get filename from input, required                
+                // as some browsers have path instead of it          
+                var file = fileFromPath(input.value);
+                                
+                if (false == self._settings.onChange.call(self, file, getExt(file))){
                     self._clearInput();                
                     return;
                 }
@@ -407,11 +410,7 @@
             // if you use using self._input.click()
             // other browsers just ignore click()
 
-            addEvent(self._button, 'mouseover', function(){
-                if (self._disabled){
-                    return;
-                }
-                
+            addEvent(self._button, 'mouseover', function(){                
                 if ( ! self._input){
 	                self._createInput();
                 }
@@ -422,16 +421,18 @@
                                 
             });
             
+            
+            // commented because we now hide input on mouseleave
             /**
              * When the window is resized the elements 
              * can be misaligned if button position depends
              * on window size
              */
-            addResizeEvent(function(){
-                if (self._input){
-                    copyLayout(self._button, self._input.parentNode);
-                }
-            });            
+            //addResizeEvent(function(){
+            //    if (self._input){
+            //        copyLayout(self._button, self._input.parentNode);
+            //    }
+            //});            
                                          
         },
         /**
@@ -499,8 +500,9 @@
         _getResponse : function(iframe, file){            
             // getting response
             var toDeleteFlag = false, self = this, settings = this._settings;   
-                                 
+               
             addEvent(iframe, 'load', function(){                
+                
                 if (// For Safari 
                     iframe.src == "javascript:'%3Chtml%3E%3C/html%3E';" ||
                     // For FF, IE
@@ -521,12 +523,12 @@
                 
                 var doc = iframe.contentDocument ? iframe.contentDocument : frames[iframe.id].document;
                 
-                // fixing Opera 9.26
+                // fixing Opera 9.26, 10.00
                 if (doc.readyState && doc.readyState != 'complete') {
-                    // Opera fires load event multiple times
-                    // Even when the DOM is not ready yet
-                    // this fix should not affect other browsers
-                    return;
+                   // Opera fires load event multiple times
+                   // Even when the DOM is not ready yet
+                   // this fix should not affect other browsers
+                   return;
                 }
                 
                 // fixing Opera 9.64
@@ -583,6 +585,7 @@
          * Upload file contained in this._input
          */
         submit: function(){
+
             var self = this, settings = this._settings;
             
             if ( ! this._input || this._input.value === ''){                
