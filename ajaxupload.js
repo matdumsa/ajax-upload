@@ -363,7 +363,7 @@
                 
                 var res = self._settings.onChange.call(self, file, getExt(file));                                
                 if (res == false){
-                    this._clearInput();                
+                    self._clearInput();                
                     return;
                 }
                 
@@ -390,9 +390,10 @@
                              
             // this._input.value = ''; Doesn't work in IE6                               
             removeNode(this._input.parentNode);
-            this._input = null;
-                                            
+            this._input = null;                                                                   
             this._createInput();
+            
+            removeClass(this._button, this._settings.hoverClass);
         },
         /**
          * Function makes sure that when user clicks upload button,

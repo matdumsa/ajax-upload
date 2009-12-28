@@ -14,7 +14,7 @@ Development workflow
    * Check tests/manual.htm in all browsers
    * Check the code with JSlint    
 * After confirmation from other users that trunk works fine publish new version
-* Update docs (http://valums.com/ajax-upload/), if necessary.
+* Update [docs](http://valums.com/ajax-upload/), if necessary.
 
 Rules
 ---

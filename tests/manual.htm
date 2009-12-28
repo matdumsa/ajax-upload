@@ -76,7 +76,8 @@
                 <a id="test4" class="button" href="http://valums.com/">Select</a>
                 <a id="test4upload" href='#'>Upload</a>
             </p>
-            <pre>                  
+            <p>Check with image and some other file</p>
+<pre>                 
 var upload = new AjaxUpload(jQuery('#test4'), {
     action: 'upload-test.php',
     name: 'woohoo-custom-name',
@@ -85,30 +86,31 @@ var upload = new AjaxUpload(jQuery('#test4'), {
     },
     autoSubmit: false,
     responseType: 'json',
+    onChange: function(file, ext){
+    },
     onSubmit: function(file, ext){
         // Allow only images. You should add security check on the server-side.
-        if (ext && /^(jpg|png|jpeg|gif)$/.test(ext)) {
-        
+        if (ext && /^(jpg|png|jpeg|gif)$/i.test(ext)) {                            
             this.setData({
-                'key1': '2 keys should be received',
+                'key1': 'This should be alerted',
                 'key2': '...'
             });
-            
-            this.disable();
         } else {
+            alert('not image');
             return false;
-        }
+        }                            
     },
     onComplete: function(file, response){
-        this.enable();                            
-        console.log(response);
+        this.disable();
+        alert(response.post.key1);
     }
 });
 jQuery('#test4upload').click(function(){
     upload.submit();
+    upload.enable();
     return false;
-});                    
-            </pre>
+});
+</pre>
 	        <script>
                 jQuery(function(){                    
                     var upload = new AjaxUpload(jQuery('#test4'), {
@@ -120,8 +122,10 @@ jQuery('#test4upload').click(function(){
                         autoSubmit: false,
                         responseType: 'json',
                         onChange: function(file, ext){
+                        },
+                        onSubmit: function(file, ext){
                             // Allow only images. You should add security check on the server-side.
-                            if (ext && /^(jpg|png|jpeg|gif)$/.test(ext)) {                            
+                            if (ext && /^(jpg|png|jpeg|gif)$/i.test(ext)) {                            
                                 this.setData({
                                     'key1': 'This should be alerted',
                                     'key2': '...'
@@ -129,22 +133,41 @@ jQuery('#test4upload').click(function(){
                             } else {
                                 alert('not image');
                                 return false;
-                            }
+                            }                            
                         },
-                        onSubmit: function(file, ext){
-                        },
-                        onComplete: function(file, response){                
-                            console.dir(response);
-                            //alert(response.post.key1);
+                        onComplete: function(file, response){
+                            this.disable();
+                            alert(response.post.key1);
                         }
                     });
                     jQuery('#test4upload').click(function(){
                         upload.submit();
+                        upload.enable();
                         return false;
                     });
                 });                    
-            </script>                        
-            <h2>Test 5 - with jQuery UI dialog</h2>             
+            </script>    
+            <h2>Test 5 - Return false in onChange</h2>       
+            <p>
+                <a id="test5" class="button" href="http://valums.com/">Select</a>
+            </p>              
+<pre>
+new AjaxUpload(document.getElementById('test5'),{
+    onChange: function(file, ext){
+        return false;
+    }
+});    
+</pre>            
+	        <script>
+                jQuery(function(){                    
+                    new AjaxUpload(document.getElementById('test5'),{
+                        onChange: function(file, ext){
+                            return false;
+                        }
+                    });
+                });                    
+            </script>             
+            <h2>Test 6 - with jQuery UI dialog</h2>             
             <p>
                 <a id="open_dialog" href="#">Button in jQuery dialog, using input[type=file]</a>
             </p>
