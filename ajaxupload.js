@@ -4,10 +4,20 @@
  * Licensed under the MIT license ( http://valums.com/mit-license/ )
  * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions
  */
-;(function(){
+(function(){
     // for jslint
     /*global window*/
-            
+
+    /**
+     * Wrapper for FireBug's console.log
+     */
+    function log(){
+        if (typeof(console) != 'undefined' && typeof(console.log) == 'function'){
+            Array.prototype.unshift.call(arguments, '[Ajax Upload]');
+    	    console.log.apply(console, arguments);
+        }
+    } 
+
     /**
      * Attaches event to a dom element.
      * @param {DOM element} el
@@ -205,6 +215,10 @@
         var re = new RegExp('\\b' + name + '\\b');                
         el.className = el.className.replace(re, '');        
     }
+    
+    function removeNode(el){
+        el.parentNode.removeChild(el);
+    }
 
     /**
      * Easy styling and uploading
@@ -314,7 +328,7 @@
                 'fontSize' : '480px',                
                 'cursor' : 'pointer'
             });            
-            
+
             var div = document.createElement("div");                        
             addStyles(div, {
                 'display' : 'block',
@@ -349,7 +363,7 @@
                 
                 var res = self._settings.onChange.call(self, file, getExt(file));                                
                 if (res == false){
-                    // prevent submit if user returns false
+                    this._clearInput();                
                     return;
                 }
                 
@@ -368,6 +382,17 @@
             });   
                         
             this._input = input;
+        },
+        _clearInput : function(){
+            if (!this._input){
+                return;
+            }            
+                             
+            // this._input.value = ''; Doesn't work in IE6                               
+            removeNode(this._input.parentNode);
+            this._input = null;
+                                            
+            this._createInput();
         },
         /**
          * Function makes sure that when user clicks upload button,
@@ -462,123 +487,135 @@
                 form.appendChild(el);
             }
             return form;
+        },
+        /**
+         * Gets response from iframe and fires onComplete event when ready
+         * @param iframe
+         * @param file Filename to use in onComplete callback 
+         */
+        _getResponse : function(iframe, file){            
+            // getting response
+            var toDeleteFlag = false, self = this, settings = this._settings;   
+                                 
+            addEvent(iframe, 'load', function(){                
+                if (// For Safari 
+                    iframe.src == "javascript:'%3Chtml%3E%3C/html%3E';" ||
+                    // For FF, IE
+                    iframe.src == "javascript:'<html></html>';"){                                                                        
+                        // First time around, do not delete.
+                        // We reload to blank page, so that reloading main page
+                        // does not re-submit the post.
+                        
+                        if (toDeleteFlag) {
+                            // Fix busy state in FF3
+                            setTimeout(function(){
+                                removeNode(iframe);
+                            }, 0);
+                        }
+                                                
+                        return;
+                }
+                
+                var doc = iframe.contentDocument ? iframe.contentDocument : frames[iframe.id].document;
+                
+                // fixing Opera 9.26
+                if (doc.readyState && doc.readyState != 'complete') {
+                    // Opera fires load event multiple times
+                    // Even when the DOM is not ready yet
+                    // this fix should not affect other browsers
+                    return;
+                }
+                
+                // fixing Opera 9.64
+                if (doc.body && doc.body.innerHTML == "false") {
+                    // In Opera 9.64 event was fired second time
+                    // when body.innerHTML changed from false 
+                    // to server response approx. after 1 sec
+                    return;
+                }
+                
+                var response;
+                
+                if (doc.XMLDocument) {
+                    // response is a xml document Internet Explorer property
+                    response = doc.XMLDocument;
+                } else if (doc.body){
+                    // response is html document or plain text
+                    response = doc.body.innerHTML;
+                    
+                    if (settings.responseType && settings.responseType.toLowerCase() == 'json') {
+                        // If the document was sent as 'application/javascript' or
+                        // 'text/javascript', then the browser wraps the text in a <pre>
+                        // tag and performs html encoding on the contents.  In this case,
+                        // we need to pull the original text content from the text node's
+                        // nodeValue property to retrieve the unmangled content.
+                        // Note that IE6 only understands text/html
+                        if (doc.body.firstChild && doc.body.firstChild.nodeName.toUpperCase() == 'PRE') {
+                            response = doc.body.firstChild.firstChild.nodeValue;
+                        }
+                        
+                        if (response) {
+                            response = eval("(" + response + ")");
+                        } else {
+                            response = {};
+                        }
+                    }
+                } else {
+                    // response is a xml document
+                    var response = doc;
+                }
+                
+                settings.onComplete.call(self, file, response);
+                
+                // Reload blank page, so that reloading main page
+                // does not re-submit the post. Also, remember to
+                // delete the frame
+                toDeleteFlag = true;
+                
+                // Fix IE mixed content issue
+                iframe.src = "javascript:'<html></html>';";
+            });            
         },        
         /**
-         * Upload file without refreshing the page
+         * Upload file contained in this._input
          */
         submit: function(){
             var self = this, settings = this._settings;
             
-            if ( ! this._input || this._input.value === '') {
-                // input is not yet created or file not selected
+            if ( ! this._input || this._input.value === ''){                
+                return;                
+            }
+                                    
+            var file = fileFromPath(this._input.value);
+            
+            // user returned false to cancel upload
+            if (false == settings.onSubmit.call(this, file, getExt(file))){
+                this._clearInput();                
                 return;
             }
             
-            // get filename from input
-            var file = fileFromPath(this._input.value);
+            // sending request    
+            var iframe = this._createIframe();            									
+            var form = this._createForm(iframe);
             
-            // execute user event
-            if (false != settings.onSubmit.call(this, file, getExt(file))) {
-                // Create new iframe for this submission
-                var iframe = this._createIframe();
-                
-                // Do not submit if user function returns false										
-                var form = this._createForm(iframe);
-                form.appendChild(this._input);
-                
-                form.submit();                
-                document.body.removeChild(form);                
-                form = null;
-                this._input = null;
-                
-                // create new input
-                this._createInput();
-                
-                var toDeleteFlag = false;
-                
-                addEvent(iframe, 'load', function(){                
-                    if (// For Safari 
-                        iframe.src == "javascript:'%3Chtml%3E%3C/html%3E';" ||
-                        // For FF, IE
-                        iframe.src == "javascript:'<html></html>';"){                                                
-                            // First time around, do not delete.
-                            if (toDeleteFlag) {
-                                // Fix busy state in FF3
-                                setTimeout(function(){
-                                    document.body.removeChild(iframe);
-                                }, 0);
-                            }
-                            return;
-                    }
-                    
-                    var doc = iframe.contentDocument ? iframe.contentDocument : frames[iframe.id].document;
-                    
-                    // fixing Opera 9.26
-                    if (doc.readyState && doc.readyState != 'complete') {
-                        // Opera fires load event multiple times
-                        // Even when the DOM is not ready yet
-                        // this fix should not affect other browsers
-                        return;
-                    }
-                    
-                    // fixing Opera 9.64
-                    if (doc.body && doc.body.innerHTML == "false") {
-                        // In Opera 9.64 event was fired second time
-                        // when body.innerHTML changed from false 
-                        // to server response approx. after 1 sec
-                        return;
-                    }
-                    
-                    var response;
-                    
-                    if (doc.XMLDocument) {
-                        // response is a xml document IE property
-                        response = doc.XMLDocument;
-                    } else if (doc.body) {
-                        // response is html document or plain text
-                        response = doc.body.innerHTML;
-                        if (settings.responseType && settings.responseType.toLowerCase() == 'json') {
-                            // If the document was sent as 'application/javascript' or
-                            // 'text/javascript', then the browser wraps the text in a <pre>
-                            // tag and performs html encoding on the contents.  In this case,
-                            // we need to pull the original text content from the text node's
-                            // nodeValue property to retrieve the unmangled content.
-                            // Note that IE6 only understands text/html
-                            if (doc.body.firstChild && doc.body.firstChild.nodeName.toUpperCase() == 'PRE') {
-                                response = doc.body.firstChild.firstChild.nodeValue;
-                            }
-                            if (response) {
-                                response = eval("(" + response + ")");
-                            }
-                            else {
-                                response = {};
-                            }
-                        }
-                    } else {
-                        // response is a xml document
-                        var response = doc;
-                    }
-                    
-                    settings.onComplete.call(self, file, response);
-                    
-                    // Reload blank page, so that reloading main page
-                    // does not re-submit the post. Also, remember to
-                    // delete the frame
-                    toDeleteFlag = true;
-                    
-                    // Fix IE mixed content issue
-                    iframe.src = "javascript:'<html></html>';";
-                });
-                
-            } else {
-                // clear input to allow user to select same file 
-                // this._input.value = ''; Doesn't work in IE6
-                
-                this._input.parentNode.removeChild(this._input);
-                this._input = null;                
-                // create new input
-                this._createInput();
-            }
+            // assuming following structure
+            // div -> input type='file'
+            removeNode(this._input.parentNode);            
+            removeClass(self._button, self._settings.hoverClass);
+                        
+            form.appendChild(this._input);
+                        
+            form.submit();
+
+            // request set, clean up                
+            removeNode(form); form = null;                          
+            removeNode(this._input); this._input = null;
+            
+            // Get response from iframe and fire onComplete event when ready
+            this._getResponse(iframe, file);            
+
+            // get ready for next request            
+            this._createInput();
         }
     };
 })();
