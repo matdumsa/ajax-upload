@@ -2,6 +2,7 @@
 ===========
 
 Development workflow
+
 1. Create a branch
 2. Fix bugs
 3. Open tests/manual.htm and follow each step
