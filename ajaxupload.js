@@ -12,9 +12,9 @@
      * Wrapper for FireBug's console.log
      */
     function log(){
-        if (typeof(console) != 'undefined' && typeof(console.log) == 'function'){
+        if (typeof(console) != 'undefined' && typeof(console.log) == 'function'){            
             Array.prototype.unshift.call(arguments, '[Ajax Upload]');
-    	    console.log.apply(console, arguments);
+    	    console.log( Array.prototype.join.call(arguments, ' '));
         }
     } 
 
@@ -352,11 +352,13 @@
                 }
                 div.style.filter = "alpha(opacity=0)";
             }            
-
+            
+            
             div.appendChild(input);
-            document.body.appendChild(div);                       
+            document.body.appendChild(div);                      
            
             addEvent(input, 'change', function(){
+                 
                 if ( ! input || input.value === ''){                
                     return;                
                 }
@@ -382,7 +384,9 @@
             
             addEvent(input, 'mouseout', function(){
                 removeClass(self._button, self._settings.hoverClass);
-                input.parentNode.style.display = 'none';
+                
+                input.parentNode.style.visibility = 'hidden';
+
             });   
                         
             this._input = input;
@@ -417,7 +421,7 @@
                 
                 var div = self._input.parentNode;                            
                 copyLayout(self._button, div);
-                div.style.display = 'block';
+                div.style.visibility = 'visible';
                                 
             });
             
@@ -585,7 +589,8 @@
          * Upload file contained in this._input
          */
         submit: function(){
-
+            log('submit called');
+                        
             var self = this, settings = this._settings;
             
             if ( ! this._input || this._input.value === ''){                
@@ -624,4 +629,4 @@
             this._createInput();
         }
     };
-})();
+})(); 
