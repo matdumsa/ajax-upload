@@ -277,7 +277,7 @@
         if ( ! button || button.nodeType !== 1){
             throw new Error("Please make sure that you're passing a valid element"); 
         }
-        
+                
         // DOM element
         this._button = button;        
         // DOM element                 
@@ -296,13 +296,13 @@
         disable: function(){
             this._disabled = true;
             if (this._input){
-                this._input.parentNode.style.display = 'none';
+                this._input.setAttribute('disabled', 'disabled');
             }
         },
         enable: function(){
             this._disabled = false;
             if (this._input){
-                this._input.parentNode.style.display = 'block';
+                this._input.removeAttribute('disabled');
             }                        
         },
         /**
