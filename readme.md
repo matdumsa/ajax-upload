@@ -2,9 +2,10 @@
 ===========
 
 Development workflow
+---
 
 1. Create a branch
-2. Fix bugs
+2. Fix bugs/add feature
 3. Open tests/manual.htm and follow each step
 4. Merge back into trunk
 5. After confirmation from other users that trunk works fine publish new version
