@@ -352,7 +352,7 @@
                 }
                 div.style.filter = "alpha(opacity=0)";
             }            
-            
+
             div.appendChild(input);
             document.body.appendChild(div);                       
            
@@ -379,6 +379,7 @@
             
             addEvent(input, 'mouseout', function(){
                 removeClass(self._button, self._settings.hoverClass);
+                input.parentNode.style.display = 'none';
             });   
                         
             this._input = input;
@@ -417,6 +418,7 @@
                 
                 var div = self._input.parentNode;                            
                 copyLayout(self._button, div);
+                div.style.display = 'block';
                                 
             });
             

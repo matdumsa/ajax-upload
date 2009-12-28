@@ -167,6 +167,7 @@ new AjaxUpload(document.getElementById('test5'),{
                     });
                 });                    
             </script>             
+            
             <h2>Test 6 - with jQuery UI dialog</h2>             
             <p>
                 <a id="open_dialog" href="#">Button in jQuery dialog, using input[type=file]</a>
@@ -175,8 +176,33 @@ new AjaxUpload(document.getElementById('test5'),{
                 <p>
                     The Ajax Upload should work perfectly with jQuery UI dialog
                 </p>
-                <input class="button" type="file" />
+                <input id="dialog_upload" class="button" type="file" />
             </div>
+            
+            <script>
+                jQuery(function($){
+                    var upload = new AjaxUpload('dialog_upload', {
+                        action: 'upload-test.php',
+                        onComplete: function(file, response){                        
+                            alert(response);
+                        }
+                    });	         
+                                 
+                    $("#dialog").dialog({
+                        autoOpen: false,
+                        beforeclose: function(event, ui){},
+                        dragStop: function(event, ui){}
+
+                    });
+                    
+                    $('#open_dialog').click(function(){
+                        $("#dialog").dialog("open");
+                        return false;	
+                    });	
+                    
+ 
+                });                             
+            </script>
         </div>
     </body>
 </html>
