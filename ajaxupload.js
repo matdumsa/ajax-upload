@@ -22,7 +22,7 @@
                 fn.call(el);
 	        });
 	    } else {
-            throw new Error('not supported');
+            throw new Error('not supported or DOM not loaded');
         }
     }   
     
@@ -192,33 +192,18 @@
         return (-1 !== file.indexOf('.')) ? file.replace(/.*[.]/, '') : '';
     }
 
-    function hasClass(el, name){
-        if (! el.hasAttribute('className')){
-            return false;
-        }
-
-        var re = new RegExp('\\b' + name + '\\b'),
-            current = el.getAttribute('className');
-        
-        return re.test(current);
+    function hasClass(el, name){        
+        var re = new RegExp('\\b' + name + '\\b');        
+        return re.test(el.className);
     }    
     function addClass(el, name){
-        if ( ! hasClass(el, name)){            
-            if (el.hasAttribute('className')){
-                var current = el.getAttribute('className');
-                el.setAttribute('className', current + ' ' + name);
-            } else {
-                el.setAttribute('className', name);
-            }
+        if ( ! hasClass(el, name)){   
+            el.className += ' ' + name;
         }
     }    
     function removeClass(el, name){
-        if (el.hasAttribute('className')){
-            var re = new RegExp('\\b' + name + '\\b'),
-                current = el.getAttribute('className');
-                
-            el.setAttribute('className', current.replace(re, ''));       
-        }        
+        var re = new RegExp('\\b' + name + '\\b');                
+        el.className = el.className.replace(re, '');        
     }
 
     /**
@@ -271,9 +256,13 @@
         } else if (typeof button == "string" && /^#.*/.test(button)) {
             // If jQuery user passes #elementId don't break it					
             button = button.slice(1);
-	    } else if (typeof element == "string") {
+	    } else if (typeof button == "string") {
 	        button = document.getElementById(button);
 	    }
+        
+        if ( ! button || button.nodeType !== 1){
+            throw new Error("Please make sure that you're passing a valid element"); 
+        }
         
         // DOM element
         this._button = button;        
@@ -400,9 +389,7 @@
 	                self._createInput();
                 }
                 
-                var div = self._input.parentNode;
-                div.style.opacity = '0.5';                
-                
+                var div = self._input.parentNode;                            
                 copyLayout(self._button, div);
                                 
             });
@@ -482,8 +469,8 @@
         submit: function(){
             var self = this, settings = this._settings;
             
-            if (this._input.value === '') {
-                // there is no file
+            if ( ! this._input || this._input.value === '') {
+                // input is not yet created or file not selected
                 return;
             }
             
@@ -587,7 +574,7 @@
                 // clear input to allow user to select same file 
                 // this._input.value = ''; Doesn't work in IE6
                 
-                document.body.removeChild(this._input);
+                this._input.parentNode.removeChild(this._input);
                 this._input = null;                
                 // create new input
                 this._createInput();
