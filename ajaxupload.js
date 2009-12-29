@@ -4,17 +4,17 @@
  * Licensed under the MIT license ( http://valums.com/mit-license/ )
  * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions 
  */
-(function(){
-    // for jslint
-    /*global window*/
-
+(function () {
+    /* global window */
+    /* jslint browser: true, devel: true, undef: true, nomen: true, bitwise: true, regexp: true, newcap: true, immed: true */
+    
     /**
      * Wrapper for FireBug's console.log
      */
     function log(){
         if (typeof(console) != 'undefined' && typeof(console.log) == 'function'){            
             Array.prototype.unshift.call(arguments, '[Ajax Upload]');
-    	    console.log( Array.prototype.join.call(arguments, ' '));
+            console.log( Array.prototype.join.call(arguments, ' '));
         }
     } 
 
@@ -47,7 +47,8 @@
      * @param fn callback This refers to the passed element
      */
     function addResizeEvent(fn){
-        var timeout;       
+        var timeout;
+               
 	    addEvent(window, 'resize', function(){
             if (timeout){
                 clearTimeout(timeout);
@@ -136,8 +137,10 @@
      * @param {Object} styles
      */
     function addStyles(el, styles){
-        for (var i in styles) {
-            el.style[i] = styles[i];
+        for (var name in styles) {
+            if (styles.hasOwnProperty(name)) {
+                el.style[name] = styles[name];
+            }
         }
     }
         
@@ -260,7 +263,9 @@
                         
         // Merge the users options with our defaults
         for (var i in options) {
-            this._settings[i] = options[i];
+            if (options.hasOwnProperty(i)){
+                this._settings[i] = options[i];
+            }
         }
                 
         // button isn't necessary a dom element
@@ -367,7 +372,7 @@
                 // as some browsers have path instead of it          
                 var file = fileFromPath(input.value);
                                 
-                if (false == self._settings.onChange.call(self, file, getExt(file))){
+                if (false === self._settings.onChange.call(self, file, getExt(file))){
                     self._clearInput();                
                     return;
                 }
@@ -491,11 +496,13 @@
             
             // Create hidden input element for each data key
             for (var prop in settings.data) {
-                var el = document.createElement("input");
-                el.setAttribute('type', 'hidden');
-                el.setAttribute('name', prop);
-                el.setAttribute('value', settings.data[prop]);
-                form.appendChild(el);
+                if (settings.data.hasOwnProperty(prop)){
+                    var el = document.createElement("input");
+                    el.setAttribute('type', 'hidden');
+                    el.setAttribute('name', prop);
+                    el.setAttribute('value', settings.data[prop]);
+                    form.appendChild(el);
+                }
             }
             return form;
         },
@@ -574,7 +581,7 @@
                     }
                 } else {
                     // response is a xml document
-                    var response = doc;
+                    response = doc;
                 }
                 
                 settings.onComplete.call(self, file, response);
@@ -603,13 +610,13 @@
             var file = fileFromPath(this._input.value);
             
             // user returned false to cancel upload
-            if (false == settings.onSubmit.call(this, file, getExt(file))){
+            if (false === settings.onSubmit.call(this, file, getExt(file))){
                 this._clearInput();                
                 return;
             }
             
             // sending request    
-            var iframe = this._createIframe();            									
+            var iframe = this._createIframe();
             var form = this._createForm(iframe);
             
             // assuming following structure
