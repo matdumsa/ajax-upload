@@ -20,4 +20,4 @@ Rules
 ---
 
 * Fix bugs before adding new features.
-* Branch master should pass all tests in all supported browsers
+* Branch "master" should pass all tests in all supported browsers
