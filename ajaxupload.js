@@ -388,10 +388,6 @@
                 div.style.filter = "alpha(opacity=0)";
             }            
             
-            
-            div.appendChild(input);
-            document.body.appendChild(div);                      
-           
             addEvent(input, 'change', function(){
                  
                 if ( ! input || input.value === ''){                
@@ -427,6 +423,9 @@
 
             });   
                         
+	        div.appendChild(input);
+            document.body.appendChild(div);
+              
             this._input = input;
         },
         _clearInput : function(){
