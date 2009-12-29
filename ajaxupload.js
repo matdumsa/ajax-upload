@@ -303,7 +303,11 @@
         // DOM element                 
         this._input = null;
         // If disabled clicking on button won't do anything
-        this._disabled = false;        
+        this._disabled = false;
+        
+        // if the button was disabled before refresh if will remain
+        // disabled in FireFox, let's fix it
+        this.enable();        
         
         this._rerouteClicks();
     };
