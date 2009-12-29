@@ -56,13 +56,13 @@
                 </script>                
             </p>
             
-            <h2>Test 2 - Huge button - Default options</h2>
+            <h2>Test 2 - Huge button - Default options - addressing with #test2</h2>
             <div id="test2" class="button" style="background: #AFA8A4; border: 5px solid black; width:100%; height: 500px; margin: 20px 0;">
                 "DIV" element as upload button. Fixed width and height.                
             </div>
 	        <script>
                 jQuery(function(){                    
-                    new AjaxUpload('test2', {
+                    new AjaxUpload('#test2', {
                         action: 'upload-test.php',
                         onComplete: function(file, response){                        
                             alert(response);
@@ -170,7 +170,7 @@ new AjaxUpload(document.getElementById('test5'),{
                 });                    
             </script>             
             
-            <h2>Test 6 - with jQuery UI dialog</h2>             
+            <h2>Test 6 - with jQuery UI dialog - onSubmit this.disable();</h2>             
             <p>
                 <a id="open_dialog" href="#">Button in jQuery dialog, using input[type=file]</a>
             </p>
@@ -185,6 +185,9 @@ new AjaxUpload(document.getElementById('test5'),{
                 jQuery(function($){
                     var upload = new AjaxUpload('dialog_upload', {
                         action: 'upload-test.php',
+                        onSubmit: function(){
+                            this.disable();
+                        },
                         onComplete: function(file, response){                        
                             alert(response);
                         }

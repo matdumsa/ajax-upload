@@ -247,6 +247,8 @@
             responseType: false,
             // Class applied to button when mouse is hovered
             hoverClass: 'hover',
+            // Class applied to button when AU is disabled
+            disabledClass: 'disabled',            
             // When user selects a file, useful with autoSubmit disabled
             // You can return false to cancel upload			
             onChange: function(file, extension){
@@ -269,13 +271,15 @@
         }
                 
         // button isn't necessary a dom element
-        if (button.jquery) {
+        if (button.jquery){
             // jQuery object was passed
             button = button[0];
-        } else if (typeof button == "string" && /^#.*/.test(button)) {
-            // If jQuery user passes #elementId don't break it					
-            button = button.slice(1);
 	    } else if (typeof button == "string") {
+            if (/^#.*/.test(button)){
+                // If jQuery user passes #elementId don't break it					
+                button = button.slice(1);                
+            }
+            
 	        button = document.getElementById(button);
 	    }
         
@@ -283,6 +287,17 @@
             throw new Error("Please make sure that you're passing a valid element"); 
         }
                 
+        if ( button.nodeName.toUpperCase() == 'A'){
+            // disable link                       
+            addEvent(button, 'click', function(e){
+                if (e && e.preventDefault){
+                    e.preventDefault();
+                } else if (window.event){
+                    window.event.returnValue = false;
+                }
+            });
+        }
+                    
         // DOM element
         this._button = button;        
         // DOM element                 
@@ -298,17 +313,28 @@
         setData: function(data){
             this._settings.data = data;
         },
-        disable: function(){
+        disable: function(){            
+            addClass(this._button, this._settings.disabledClass);
             this._disabled = true;
+            
+            var nodeName = this._button.nodeName.toUpperCase();            
+            if (nodeName == 'INPUT' || nodeName == 'BUTTON'){
+                this._button.setAttribute('disabled', 'disabled');
+            }            
+            
+            // hide input
             if (this._input){
-                this._input.setAttribute('disabled', 'disabled');
+                // We use visibility instead of display to fix problem with Safari 4
+                // The problem is that the value of input doesn't change if it 
+                // has display none when user selects a file           
+                this._input.parentNode.style.visibility = 'hidden';
             }
         },
         enable: function(){
+            removeClass(this._button, this._settings.disabledClass);
+            this._button.removeAttribute('disabled');
             this._disabled = false;
-            if (this._input){
-                this._input.removeAttribute('disabled');
-            }                        
+            
         },
         /**
          * Creates invisible file input 
@@ -325,7 +351,7 @@
             addStyles(input, {
                 'position' : 'absolute',
                 // in Opera only 'browse' button
-                // is clickable and is located at
+                // is clickable and it is located at
                 // the right side of the input
                 'right' : 0,
                 'margin' : 0,
@@ -422,7 +448,11 @@
             // if you use using self._input.click()
             // other browsers just ignore click()
 
-            addEvent(self._button, 'mouseover', function(){                
+            addEvent(self._button, 'mouseover', function(){
+                if (self._disabled){
+                    return;
+                }
+                                
                 if ( ! self._input){
 	                self._createInput();
                 }
@@ -535,9 +565,9 @@
                         return;
                 }
                 
-                var doc = iframe.contentDocument ? iframe.contentDocument : frames[iframe.id].document;
+                var doc = iframe.contentDocument ? iframe.contentDocument : window.frames[iframe.id].document;
                 
-                // fixing Opera 9.26, 10.00
+                // fixing Opera 9.26,10.00
                 if (doc.readyState && doc.readyState != 'complete') {
                    // Opera fires load event multiple times
                    // Even when the DOM is not ready yet
@@ -598,9 +628,7 @@
         /**
          * Upload file contained in this._input
          */
-        submit: function(){
-            log('submit called');
-                        
+        submit: function(){                        
             var self = this, settings = this._settings;
             
             if ( ! this._input || this._input.value === ''){                

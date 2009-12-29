@@ -83,7 +83,7 @@
 		});
 	
 		/* Example 2 */
-		new AjaxUpload('#button2', {
+		new AjaxUpload('button2', {
             action: 'do-nothing.htm',
 			data : {
 				'key1' : "This data won't",
@@ -111,7 +111,7 @@
 		});
 		
 		/* Example3 */
-		new AjaxUpload('#button3', {
+		new AjaxUpload('button3', {
 			action: 'do-nothing.htm',
 			name: 'myfile',
 			onComplete : function(file){
@@ -127,7 +127,7 @@
 			return false;	
 		});	
 		
-		new Ajax_upload('button4', {
+		new AjaxUpload('button4', {
 			action: 'do-nothing.htm',
 			onSubmit : function(file , ext){
 				$('#button4').text('Uploading ' + file);
