@@ -274,14 +274,14 @@
         if (button.jquery){
             // jQuery object was passed
             button = button[0];
-	    } else if (typeof button == "string") {
+        } else if (typeof button == "string") {
             if (/^#.*/.test(button)){
                 // If jQuery user passes #elementId don't break it					
                 button = button.slice(1);                
             }
             
-	        button = document.getElementById(button);
-	    }
+            button = document.getElementById(button);
+        }
         
         if ( ! button || button.nodeType !== 1){
             throw new Error("Please make sure that you're passing a valid element"); 
