@@ -20,7 +20,7 @@
 
     /**
      * Attaches event to a dom element.
-     * @param {DOM element} el
+     * @param {Element} el
      * @param type event name
      * @param fn callback This refers to the passed element
      */
@@ -110,7 +110,7 @@
     /**
      * Returns left, top, right and bottom properties describing the border-box,
      * in pixels, with the top-left relative to the body
-     * @param {DOM element} el
+     * @param {Element} el
      * @return {Object} Contains left, top, right,bottom
      */
     function getBox(el){
@@ -133,7 +133,7 @@
     /**
      * Helper that takes object literal
      * and add all properties to element.style
-     * @param {DOM element} el
+     * @param {Element} el
      * @param {Object} styles
      */
     function addStyles(el, styles){
@@ -148,8 +148,8 @@
      * Function places an absolutely positioned
      * element on top of the specified element
      * copying position and dimentions.
-     * @param {DOM element} from
-     * @param {DOM element} to
+     * @param {Element} from
+     * @param {Element} to
      */    
     function copyLayout(from, to){
 	    var box = getBox(from);
@@ -482,7 +482,7 @@
         },
         /**
          * Creates iframe with unique name
-         * @return {DOM element} iframe
+         * @return {Element} iframe
          */
         _createIframe: function(){
             // We can't use getTime, because it sometimes return
@@ -509,8 +509,8 @@
         },
         /**
          * Creates form, that will be submitted to iframe
-         * @param {DOM element} iframe Where to submit
-         * @return {DOM element} form
+         * @param {Element} iframe Where to submit
+         * @return {Element} form
          */
         _createForm: function(iframe){
             var settings = this._settings;
