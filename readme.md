@@ -3,7 +3,10 @@ Browsers force us to use file inputs (&lt;input type="file" /&gt;) for uploads, 
 **AJAX Upload** allows you to easily upload multiple files without refreshing the page and use any element to show file selection window. It works in all major browsers and doesn't require any library to run. AJAX Upload doesn't pollute the global namespace, and is tested with jQuery, Prototypejs.
 
 ## Demo ##
-Here is an examples for <a href="http://valums.com/wp-content/uploads/ajax-upload/demo-jquery.htm">AJAX Upload</a> used with jQuery.
+Here is an example for <a href="http://valums.com/wp-content/uploads/ajax-upload/demo-jquery.htm">AJAX Upload</a> used with jQuery.
+
+## Supported browsers ##
+IE6 - IE8, FF2 - 3.5, Safari4, Chrome3, Opera 9.64 - 10
 
 ## How to use it? ##
 
