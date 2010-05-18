@@ -2,7 +2,7 @@
  * AJAX Upload ( http://valums.com/ajax-upload/ ) 
  * Copyright (c) Andris Valums
  * Licensed under the MIT license ( http://valums.com/mit-license/ )
- * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions 
+ * Thanks to Gary Haran, David Mark, Corey Burns and others for contributions. 
  */
 (function () {
     /* global window */
@@ -662,10 +662,10 @@
 
             // request set, clean up                
             removeNode(form); form = null;                          
-            removeNode(this._input); this._input = null;
+            removeNode(this._input); this._input = null;            
             
             // Get response from iframe and fire onComplete event when ready
-            this._getResponse(iframe, file);            
+            // this._getResponse(iframe, file);            
 
             // get ready for next request            
             this._createInput();
