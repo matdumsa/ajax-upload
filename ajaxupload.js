@@ -665,7 +665,7 @@
             removeNode(this._input); this._input = null;            
             
             // Get response from iframe and fire onComplete event when ready
-            // this._getResponse(iframe, file);            
+            this._getResponse(iframe, file);            
 
             // get ready for next request            
             this._createInput();
