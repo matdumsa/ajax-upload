@@ -247,6 +247,8 @@
             responseType: false,
             // Class applied to button when mouse is hovered
             hoverClass: 'hover',
+            // Class applied to button when button is focused
+            focusClass: 'focus',
             // Class applied to button when AU is disabled
             disabledClass: 'disabled',            
             // When user selects a file, useful with autoSubmit disabled
@@ -415,6 +417,7 @@
             
             addEvent(input, 'mouseout', function(){
                 removeClass(self._button, self._settings.hoverClass);
+                removeClass(self._button, self._settings.focusClass);
                 
                 // We use visibility instead of display to fix problem with Safari 4
                 // The problem is that the value of input doesn't change if it 
@@ -423,6 +426,14 @@
 
             });   
                         
+            addEvent(input, 'focus', function(){
+                addClass(self._button, self._settings.focusClass);
+            });
+            
+            addEvent(input, 'blur', function(){
+                removeClass(self._button, self._settings.focusClass);
+            });
+            
 	        div.appendChild(input);
             document.body.appendChild(div);
               
@@ -439,6 +450,7 @@
             this._createInput();
             
             removeClass(this._button, this._settings.hoverClass);
+            removeClass(this._button, this._settings.focusClass);
         },
         /**
          * Function makes sure that when user clicks upload button,
@@ -655,6 +667,7 @@
             // div -> input type='file'
             removeNode(this._input.parentNode);            
             removeClass(self._button, self._settings.hoverClass);
+            removeClass(self._button, self._settings.focusClass);
                         
             form.appendChild(this._input);
                         
