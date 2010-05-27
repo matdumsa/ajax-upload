@@ -362,7 +362,10 @@
                 'right' : 0,
                 'margin' : 0,
                 'padding' : 0,
-                'fontSize' : '480px',                
+                'fontSize' : '480px',
+                // in Firefox if font-family is set to
+                // 'inherit' the input doesn't work
+                'fontFamily' : 'sans-serif',
                 'cursor' : 'pointer'
             });            
 
